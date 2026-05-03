@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  DEVELOPER
+  ADMIN
+}
+
+enum ChallengeStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+enum ToolSlug {
+  JSON_FORMATTER
+  JWT_DECODER
+  PASSWORD_GENERATOR
+  MARKDOWN_PREVIEW
+  REGEX_TESTER
+  API_TESTER
+  BASE64_TOOL
+}
+
+enum PRStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionReason {
+  PR_APPROVED
+  WEEKLY_WINNER
+  MONTHLY_WINNER
+  BONUS
+  WITHDRAWAL
+  PENALTY
+  ADMIN_CREDIT
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  REJECTED
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  githubId      String   @unique
+  username      String   @unique
+  email         String?  @unique
+  avatarUrl     String?
+  bio           String?
+  githubUrl     String?
+  role          Role     @default(DEVELOPER)
+  totalPoints   Int      @default(0)
+  weeklyPoints  Int      @default(0)
+  monthlyPoints Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  wallet             Wallet?
+  prs                PullRequest[]
+  leaderboardEntries LeaderboardEntry[]
+
+  @@index([role])
+  @@index([totalPoints])
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  withdrawals  Withdrawal[]
+}
+
+model Transaction {
+  id        String            @id @default(cuid())
+  walletId  String
+  amount    Float
+  type      TransactionType
+  reason    TransactionReason
+  note      String?
+  createdAt DateTime          @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([createdAt])
+}
+
+model Withdrawal {
+  id        String           @id @default(cuid())
+  walletId  String
+  amount    Float
+  method    String           @default("BANK_TRANSFER")
+  details   String?
+  status    WithdrawalStatus @default(PENDING)
+  note      String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([status])
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  slug        ToolSlug @unique
+  name        String
+  description String
+  icon        String?
+  isLive      Boolean  @default(false)
+  weekNumber  Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  challenges Challenge[]
+}
+
+model Challenge {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  week        Int
+  year        Int
+  toolId      String
+  status      ChallengeStatus @default(DRAFT)
+  totalPoints Int             @default(100)
+  startDate   DateTime?
+  endDate     DateTime?
+  rewardPool  Float           @default(100)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  tool               Tool               @relation(fields: [toolId], references: [id])
+  tasks              Task[]
+  prs                PullRequest[]
+  leaderboardEntries LeaderboardEntry[]
+
+  @@unique([week, year])
+  @@index([status])
+}
+
+model Task {
+  id                String   @id @default(cuid())
+  challengeId       String
+  title             String
+  description       String
+  acceptanceCriteria String
+  points            Int
+  label             String   @default("medium")
+  githubIssueNumber Int?
+  githubIssueUrl    String?
+  completed         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([challengeId])
+}
+
+model PullRequest {
+  id             String    @id @default(cuid())
+  userId         String
+  challengeId    String
+  taskId         String?
+  githubPrUrl    String
+  githubPrNumber Int?
+  title          String
+  description    String?
+  status         PRStatus  @default(PENDING)
+  score          Int?
+  feedback       String?
+  pointsAwarded  Int       @default(0)
+  bfcAwarded     Float     @default(0)
+  reviewedAt     DateTime?
+  reviewedBy     String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([status])
+}
+
+model LeaderboardEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  points      Int      @default(0)
+  bfcEarned   Float    @default(0)
+  rank        Int?
+  week        Int
+  year        Int
+  month       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([week, year])
+  @@index([points])
+}
