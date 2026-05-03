@@ -1,0 +1,27 @@
+{
+  "name": "benflux-devtools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Benflux DevTools — Community-driven developer tools platform powered by DevArena",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:migrate": "turbo run prisma:migrate",
+    "db:generate": "turbo run prisma:generate",
+    "db:seed": "turbo run prisma:seed",
+    "db:studio": "turbo run prisma:studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
