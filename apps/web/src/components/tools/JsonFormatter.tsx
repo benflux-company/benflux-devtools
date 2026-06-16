@@ -4,11 +4,13 @@ import { useState, useEffect, useMemo } from "react";
 import { highlightJson } from "../../lib/json-highlighter";
 import { validateJson, ValidationResult } from "../../lib/json-formatter";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { JsonTreeNode } from "./JsonTreeNode";
 
 export function JsonFormatter() {
   const [input, setInput] = useState("");
   const [isDark, setIsDark] = useState(false);
   const [isMinified, setIsMinified] = useState(false);
+  const [activeTab, setActiveTab] = useState<'text' | 'tree'>('text');
   const [validation, setValidation] = useState<ValidationResult>({ valid: true, parsed: null });
   const { copy, copied } = useCopyToClipboard();
 
@@ -88,8 +90,21 @@ export function JsonFormatter() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Output</label>
+          <div className="flex items-center justify-between pb-1">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setActiveTab('text')}
+                className={`text-sm font-medium px-1 pb-1 border-b-2 ${activeTab === 'text' ? 'text-blue-500 border-blue-500' : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+              >
+                Output
+              </button>
+              <button
+                onClick={() => setActiveTab('tree')}
+                className={`text-sm font-medium px-1 pb-1 border-b-2 ${activeTab === 'tree' ? 'text-blue-500 border-blue-500' : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`}
+              >
+                Tree
+              </button>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setIsMinified(!isMinified)}
@@ -112,6 +127,10 @@ export function JsonFormatter() {
               <p className="text-gray-500 dark:text-gray-400 italic">Formatted JSON will appear here</p>
             ) : !validation.valid ? (
               <p className="text-red-500 dark:text-red-400 italic">Fix the JSON errors to view the formatted output.</p>
+            ) : activeTab === 'tree' ? (
+              <div className="pt-2">
+                <JsonTreeNode value={validation.parsed} />
+              </div>
             ) : (
               <pre
                 className="text-sm font-mono whitespace-pre-wrap"
