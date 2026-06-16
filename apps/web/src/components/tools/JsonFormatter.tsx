@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { highlightJson } from "../../lib/json-highlighter";
 import { validateJson, ValidationResult } from "../../lib/json-formatter";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
@@ -8,6 +8,7 @@ import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 export function JsonFormatter() {
   const [input, setInput] = useState("");
   const [isDark, setIsDark] = useState(false);
+  const [isMinified, setIsMinified] = useState(false);
   const [validation, setValidation] = useState<ValidationResult>({ valid: true, parsed: null });
   const { copy, copied } = useCopyToClipboard();
 
@@ -27,10 +28,12 @@ export function JsonFormatter() {
     setIsDark(isDarkMode);
   };
   
-  let formattedJson = "";
-  if (validation.valid && validation.parsed !== null) {
-    formattedJson = JSON.stringify(validation.parsed, null, 2);
-  }
+  const formattedJson = useMemo(() => {
+    if (!validation.valid || validation.parsed === null) return "";
+    return isMinified
+      ? JSON.stringify(validation.parsed)
+      : JSON.stringify(validation.parsed, null, 2);
+  }, [validation, isMinified]);
 
   return (
     <div className="flex flex-col h-full gap-4">
@@ -87,13 +90,22 @@ export function JsonFormatter() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Output</label>
-            <button
-              onClick={() => copy(formattedJson)}
-              disabled={!validation.valid || !input.trim()}
-              className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsMinified(!isMinified)}
+                disabled={!validation.valid || !input.trim()}
+                className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isMinified ? "Format" : "Minify"}
+              </button>
+              <button
+                onClick={() => copy(formattedJson)}
+                disabled={!validation.valid || !input.trim()}
+                className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
           </div>
           <div className="flex-1 w-full p-4 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg overflow-auto">
             {!input.trim() ? (
