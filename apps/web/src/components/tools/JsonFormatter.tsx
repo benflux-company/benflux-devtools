@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { highlightJson } from "../../lib/json-highlighter";
+import { validateJson, ValidationResult } from "../../lib/json-formatter";
 
 export function JsonFormatter() {
   const [input, setInput] = useState("");
   const [isDark, setIsDark] = useState(false);
+  const [validation, setValidation] = useState<ValidationResult>({ valid: true, parsed: null });
 
   useEffect(() => {
     if (document.documentElement.classList.contains("dark")) {
@@ -13,21 +15,19 @@ export function JsonFormatter() {
     }
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setValidation(validateJson(input)), 300);
+    return () => clearTimeout(timer);
+  }, [input]);
+
   const toggleTheme = () => {
     const isDarkMode = document.documentElement.classList.toggle("dark");
     setIsDark(isDarkMode);
   };
   
   let formattedJson = "";
-  let error = false;
-  
-  if (input) {
-    try {
-      const parsed = JSON.parse(input);
-      formattedJson = JSON.stringify(parsed, null, 2);
-    } catch (e) {
-      error = true;
-    }
+  if (validation.valid && validation.parsed !== null) {
+    formattedJson = JSON.stringify(validation.parsed, null, 2);
   }
 
   return (
@@ -44,6 +44,34 @@ export function JsonFormatter() {
           {isDark ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
       </header>
+
+      {/* Validation Banner */}
+      {input.trim() && (
+        <div
+          className={`p-4 rounded-lg border flex items-center gap-3 ${
+            validation.valid
+              ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
+              : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
+          }`}
+        >
+          {validation.valid ? (
+            <>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="font-medium">Valid JSON</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="font-medium">Invalid JSON:</span>
+              <span className="font-mono text-sm">{validation.error}</span>
+            </>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Input</label>
@@ -57,10 +85,10 @@ export function JsonFormatter() {
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Output</label>
           <div className="flex-1 w-full p-4 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg overflow-auto">
-            {!input ? (
+            {!input.trim() ? (
               <p className="text-gray-500 dark:text-gray-400 italic">Formatted JSON will appear here</p>
-            ) : error ? (
-              <p className="text-red-500">Invalid JSON</p>
+            ) : !validation.valid ? (
+              <p className="text-red-500 dark:text-red-400 italic">Fix the JSON errors to view the formatted output.</p>
             ) : (
               <pre
                 className="text-sm font-mono whitespace-pre-wrap"
