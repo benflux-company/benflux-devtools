@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { highlightJson } from "../../lib/json-highlighter";
 import { validateJson, ValidationResult } from "../../lib/json-formatter";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 export function JsonFormatter() {
   const [input, setInput] = useState("");
   const [isDark, setIsDark] = useState(false);
   const [validation, setValidation] = useState<ValidationResult>({ valid: true, parsed: null });
+  const { copy, copied } = useCopyToClipboard();
 
   useEffect(() => {
     if (document.documentElement.classList.contains("dark")) {
@@ -83,7 +85,16 @@ export function JsonFormatter() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Output</label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Output</label>
+            <button
+              onClick={() => copy(formattedJson)}
+              disabled={!validation.valid || !input.trim()}
+              className="px-3 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
           <div className="flex-1 w-full p-4 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg overflow-auto">
             {!input.trim() ? (
               <p className="text-gray-500 dark:text-gray-400 italic">Formatted JSON will appear here</p>
