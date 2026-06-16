@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Benflux DevTools — Community-driven developer tools platform powered by DevArena",
+  "packageManager": "npm@10.9.0",
   "workspaces": [
     "apps/*"
   ],
