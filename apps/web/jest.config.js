@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 const config = {
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   transform: {
     "^.+\\.(ts|tsx)$": [
       "ts-jest",
