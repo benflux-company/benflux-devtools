@@ -10,3 +10,7 @@ export function validateJson(input: string): ValidationResult {
     return { valid: false, error: (e as Error).message }
   }
 }
+
+export function formatJson(parsed: unknown, isMinified = false): string {
+  return isMinified ? JSON.stringify(parsed) : JSON.stringify(parsed, null, 2);
+}
