@@ -19,6 +19,11 @@
     "db:studio": "turbo run prisma:studio"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.4",
     "turbo": "^2.0.0"
   },
   "engines": {
