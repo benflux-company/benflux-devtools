@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Benflux DevTools — Community-driven developer tools platform powered by DevArena",
+  "packageManager": "npm@10.9.0",
   "workspaces": [
     "apps/*"
   ],
@@ -12,16 +13,34 @@
     "start": "turbo run start",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "type-check": "turbo run type-check",
     "db:migrate": "turbo run prisma:migrate",
     "db:generate": "turbo run prisma:generate",
     "db:seed": "turbo run prisma:seed",
-    "db:studio": "turbo run prisma:studio"
+    "db:studio": "turbo run prisma:studio",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.8.4",
     "turbo": "^2.0.0"
   },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
+  },
+  "lint-staged": {
+    "apps/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "apps/**/*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
