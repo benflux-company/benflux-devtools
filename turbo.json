@@ -21,6 +21,9 @@
       "outputs": ["coverage/**"],
       "cache": false
     },
+    "type-check": {
+      "outputs": []
+    },
     "prisma:generate": {
       "cache": false
     },

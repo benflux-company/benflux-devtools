@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-github2';
-import { ConfigService } from '@nestjs/config';
-import { AuthService } from '../auth.service';
+import { Injectable } from '@nestjs/common'
+import { PassportStrategy } from '@nestjs/passport'
+import { Strategy } from 'passport-github2'
+import { ConfigService } from '@nestjs/config'
+import { AuthService } from '../auth.service'
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
@@ -15,14 +15,10 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       clientSecret: configService.get<string>('github.clientSecret'),
       callbackURL: configService.get<string>('github.callbackUrl'),
       scope: ['user:email', 'read:user'],
-    });
+    })
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
-  ): Promise<any> {
+  async validate(accessToken: string, refreshToken: string, profile: any): Promise<any> {
     const githubUser = {
       githubId: String(profile.id),
       username: profile.username,
@@ -30,8 +26,8 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       avatarUrl: profile.photos?.[0]?.value || null,
       bio: profile._json?.bio || null,
       githubUrl: profile.profileUrl || null,
-    };
+    }
 
-    return this.authService.findOrCreateUser(githubUser);
+    return this.authService.findOrCreateUser(githubUser)
   }
 }
