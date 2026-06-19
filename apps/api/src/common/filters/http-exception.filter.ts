@@ -22,20 +22,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const message =
+    const exceptionResponse =
       exception instanceof HttpException
         ? exception.getResponse()
-        : 'Internal server error';
+        : { message: 'Internal server error', error: 'Internal Server Error' };
 
-    const errorResponse = {
+    const errorPayload: any = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
+      error:
+        typeof exceptionResponse === 'object'
+          ? (exceptionResponse as any).error || 'Error'
+          : 'Error',
       message:
-        typeof message === 'object' && 'message' in (message as object)
-          ? (message as any).message
-          : message,
+        typeof exceptionResponse === 'object'
+          ? (exceptionResponse as any).message || exceptionResponse
+          : exceptionResponse,
     };
+
+    // No stack traces exposed in production
+    if (process.env.NODE_ENV !== 'production' && status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      errorPayload.stack = exception instanceof Error ? exception.stack : String(exception);
+    }
 
     if (status >= 500) {
       this.logger.error(
@@ -44,6 +53,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     }
 
-    response.status(status).json(errorResponse);
+    response.status(status).json(errorPayload);
   }
 }
