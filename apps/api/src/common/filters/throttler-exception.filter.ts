@@ -15,18 +15,12 @@ export class ThrottlerExceptionFilter implements ExceptionFilter {
 
     this.logger.warn(`Rate limit exceeded: ${request.method} ${request.url} — IP: ${request.ip}`)
 
-    response
-      .status(status)
-      .header('X-RateLimit-Limit', '100')
-      .header('X-RateLimit-Remaining', '0')
-      .header('Retry-After', '60')
-      .json({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-        message:
-          'Too many requests. You have exceeded the rate limit for this endpoint. Please wait 60 seconds before retrying.',
-        error: 'Too Many Requests',
-      })
+    response.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      message: exception.message,
+      error: 'Too Many Requests',
+    })
   }
 }
