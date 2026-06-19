@@ -2,10 +2,11 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationPipe, Logger } from '@nestjs/common'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { ConfigService } from '@nestjs/config'
-import cookieParser from 'cookie-parser'
+import * as cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import { AppModule } from './app.module'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter'
+import { ThrottlerExceptionFilter } from './common/filters/throttler-exception.filter'
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
 
 async function bootstrap() {
@@ -38,7 +39,7 @@ async function bootstrap() {
     }),
   )
 
-  app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalFilters(new ThrottlerExceptionFilter(), new HttpExceptionFilter())
   app.useGlobalInterceptors(new LoggingInterceptor())
 
   const swaggerConfig = new DocumentBuilder()
