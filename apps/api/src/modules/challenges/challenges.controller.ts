@@ -24,7 +24,7 @@ export class ChallengesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth('JWT')
-  @ApiOperation({ summary: 'Create a new challenge (admin only)' })
+  @ApiOperation({ summary: 'Create a new challenge (admin only)', description: 'Creates a new challenge' })
   @ApiResponse({ status: 201, description: 'Challenge created' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   create(@Body() dto: CreateChallengesDto) {
