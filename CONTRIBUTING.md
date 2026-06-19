@@ -125,6 +125,15 @@ docs: add setup instructions for Windows
 test: add unit tests for JSON parse utility
 ```
 
+### Pre-commit Hooks
+
+This repository uses Husky and lint-staged to ensure code quality before commits are created. The following checks are run automatically on pre-commit:
+- `type-check` across the entire project (`tsc --noEmit`).
+- `eslint --fix` and `prettier --write` on changed TypeScript/JavaScript files.
+- `prettier --write` on changed JSON and Markdown files.
+
+Please ensure your code passes these checks before committing.
+
 ---
 
 ## Scoring & Rewards
