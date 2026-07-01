@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: benflux-api
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: benflux-api
+                port:
+                  number: {{ .Values.service.port }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: benflux-api-tls
