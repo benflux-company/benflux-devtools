@@ -1,0 +1,17 @@
+{{- range $name, $comp := .Values.components }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Chart.Name }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $.Chart.Name }}-{{ $name }}
+spec:
+  selector:
+    app: {{ $.Chart.Name }}-{{ $name }}
+  ports:
+    - port: {{ $comp.service.port }}
+      targetPort: {{ $comp.service.targetPort }}
+      protocol: TCP
+{{- end }}

@@ -1,0 +1,99 @@
+components:
+  api:
+    replicaCount: 2
+    image:
+      repository: ghcr.io/benflux-company/benflux-devtools-api
+      tag: latest
+      pullPolicy: Always
+    service:
+      port: 80
+      targetPort: 4000
+    healthCheck:
+      path: /api/health
+    ingress:
+      enabled: false
+    gateway:
+      enabled: true
+      host: api.benfluxgroup.com
+      path: /benflux-devtools-api
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPU: 70
+      targetMemory: 80
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env:
+      NODE_ENV: production
+      APP_ENV: production
+      PORT: "4000"
+      GITHUB_OWNER: benflux-company
+      GITHUB_REPO: benflux-devtools
+      FRONTEND_URL: https://devtools.benfluxgroup.com
+      AUTH_API_URL: https://auth.benfluxgroup.com
+      AUTH_PUBLIC_URL: https://auth.benfluxgroup.com
+
+  web:
+    replicaCount: 2
+    image:
+      repository: ghcr.io/benflux-company/benflux-devtools-web
+      tag: latest
+      pullPolicy: Always
+    service:
+      port: 80
+      targetPort: 3000
+    healthCheck:
+      path: /
+    ingress:
+      enabled: true
+      host: devtools.benfluxgroup.com
+    gateway:
+      enabled: false
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPU: 70
+      targetMemory: 80
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env:
+      NODE_ENV: production
+      APP_ENV: production
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_API_URL: https://api.benfluxgroup.com/benflux-devtools-api/api
+      NEXT_PUBLIC_APP_URL: https://devtools.benfluxgroup.com
+      NEXT_PUBLIC_AUTH_PUBLIC_URL: https://auth.benfluxgroup.com
+
+postgres:
+  storage: 20Gi
+
+# Sized for maxReplicas (4) + 1 rolling-update surge per component = 5 pods
+# each for api/web, plus 1 postgres pod — not just the base replicaCount (2).
+# benflux-admin and benflux-auth both hit the same bug live: a quota sized
+# only for the steady-state replica count leaves zero headroom for the surge
+# pod every rollout creates, permanently stuck at ProgressDeadlineExceeded
+# the first time autoscaling actually scales past a couple of replicas.
+resourceQuota:
+  requestsCpu: 1200m
+  requestsMemory: 1500Mi
+  limitsCpu: "6"
+  limitsMemory: 6Gi
+
+limitRange:
+  defaultRequestCpu: 100m
+  defaultRequestMemory: 128Mi
+  defaultLimitCpu: 500m
+  defaultLimitMemory: 512Mi

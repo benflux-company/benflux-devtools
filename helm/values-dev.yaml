@@ -1,0 +1,87 @@
+components:
+  api:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/benflux-company/benflux-devtools-api
+      tag: latest
+      pullPolicy: Always
+    service:
+      port: 80
+      targetPort: 4000
+    healthCheck:
+      path: /api/health
+    ingress:
+      enabled: false
+    gateway:
+      enabled: true
+      host: api-dev.benfluxgroup.com
+      path: /benflux-devtools-api
+    autoscaling:
+      enabled: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 96Mi
+      limits:
+        cpu: 250m
+        memory: 384Mi
+    env:
+      NODE_ENV: production
+      APP_ENV: dev
+      PORT: "4000"
+      GITHUB_OWNER: benflux-company
+      GITHUB_REPO: benflux-devtools
+      FRONTEND_URL: https://devtools-dev.benfluxgroup.com
+      AUTH_API_URL: https://auth-dev.benfluxgroup.com
+      AUTH_PUBLIC_URL: https://auth-dev.benfluxgroup.com
+
+  web:
+    replicaCount: 1
+    image:
+      repository: ghcr.io/benflux-company/benflux-devtools-web
+      tag: latest
+      pullPolicy: Always
+    service:
+      port: 80
+      targetPort: 3000
+    healthCheck:
+      path: /
+    ingress:
+      enabled: true
+      host: devtools-dev.benfluxgroup.com
+    gateway:
+      enabled: false
+    autoscaling:
+      enabled: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 96Mi
+      limits:
+        cpu: 250m
+        memory: 384Mi
+    env:
+      NODE_ENV: production
+      APP_ENV: dev
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_API_URL: https://api-dev.benfluxgroup.com/benflux-devtools-api/api
+      NEXT_PUBLIC_APP_URL: https://devtools-dev.benfluxgroup.com
+      NEXT_PUBLIC_AUTH_PUBLIC_URL: https://auth-dev.benfluxgroup.com
+
+postgres:
+  storage: 5Gi
+
+# 2x replicaCount headroom for rolling-update surge (maxSurge=25% still needs
+# a full extra pod when replicaCount=1) — sized per component + postgres.
+resourceQuota:
+  requestsCpu: 400m
+  requestsMemory: 512Mi
+  limitsCpu: "2"
+  limitsMemory: 2Gi
+
+limitRange:
+  defaultRequestCpu: 50m
+  defaultRequestMemory: 96Mi
+  defaultLimitCpu: 250m
+  defaultLimitMemory: 384Mi

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
