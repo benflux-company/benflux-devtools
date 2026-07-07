@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Braces } from "lucide-react";
+import { ArrowLeftRight, Braces, FileCode2, FileInput, LayoutGrid } from "lucide-react";
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@benflux-ui/react";
 
 const tools = [
@@ -9,6 +9,41 @@ const tools = [
     href: "/tools/json-formatter",
     icon: Braces,
     status: "Available",
+  },
+  {
+    name: "JSON → Types",
+    description: "Infer TypeScript interfaces, Zod schemas, or JSON Schema straight from JSON data.",
+    href: "/tools/json-to-types",
+    icon: FileCode2,
+    status: "Available",
+  },
+  {
+    name: "JSON ⇄ YAML",
+    description: "Convert between JSON and YAML in either direction.",
+    href: "/tools/json-yaml",
+    icon: ArrowLeftRight,
+    status: "Available",
+  },
+  {
+    name: "JSON ⇄ TOML",
+    description: "Convert between JSON and TOML in either direction.",
+    href: "/tools/json-toml",
+    icon: ArrowLeftRight,
+    status: "Available",
+  },
+  {
+    name: "XML → JSON",
+    description: "Convert XML documents to JSON, attributes included.",
+    href: "/tools/xml-to-json",
+    icon: FileInput,
+    status: "Available",
+  },
+  {
+    name: "Browse all converters",
+    description: "Search the full roadmap of format conversions, from GraphQL to Rust Serde.",
+    href: "/converters",
+    icon: LayoutGrid,
+    status: "70+ formats",
   },
 ];
 

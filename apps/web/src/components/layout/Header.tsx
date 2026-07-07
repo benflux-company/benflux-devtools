@@ -18,6 +18,9 @@ export function Header() {
             <Link href="/tools/json-formatter">JSON Formatter</Link>
           </Button>
           <Button asChild variant="ghost" size="sm" animate={false}>
+            <Link href="/converters">Converters</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm" animate={false}>
             <a href="/login">Sign in</a>
           </Button>
           <span className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
