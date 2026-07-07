@@ -1,6 +1,4 @@
-function escapeHtml(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+import { escapeHtml } from "./html-escape";
 
 export function highlightJson(json: string): string {
   const escaped = escapeHtml(json);

@@ -22,6 +22,7 @@ import { generateTypeScript } from "../../lib/generators/typescript";
 import { generateZod } from "../../lib/generators/zod";
 import { generateJsonSchema } from "../../lib/generators/json-schema";
 import { CodeOutput } from "./CodeOutput";
+import type { CodeLanguage } from "../../lib/code-highlighter";
 
 type OutputFormat = "typescript" | "zod" | "json-schema";
 
@@ -55,7 +56,7 @@ export function JsonToTypes() {
     return generateJsonSchema(inferred, { title: safeRootName });
   }, [validation, format, safeRootName, useTypeAlias, readonlyFields, input]);
 
-  const languageFor: Record<OutputFormat, string> = {
+  const languageFor: Record<OutputFormat, CodeLanguage> = {
     typescript: "typescript",
     zod: "typescript",
     "json-schema": "json",

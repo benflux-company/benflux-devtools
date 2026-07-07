@@ -1,17 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import { Check, Copy } from "lucide-react";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { highlightCode, type CodeLanguage } from "../../lib/code-highlighter";
 
 export interface CodeOutputProps {
   code: string;
   filename?: string;
-  language?: string;
+  language: CodeLanguage;
   "data-testid"?: string;
 }
 
 export function CodeOutput({ code, filename, language, "data-testid": testId }: CodeOutputProps) {
   const { copy, copied } = useCopyToClipboard();
+  const highlighted = useMemo(() => highlightCode(code, language), [code, language]);
 
   return (
     <div
@@ -38,9 +41,10 @@ export function CodeOutput({ code, filename, language, "data-testid": testId }: 
           )}
         </button>
       </div>
-      <pre className="p-4 text-sm font-mono text-gray-800 dark:text-gray-100 overflow-x-auto whitespace-pre">
-        {code}
-      </pre>
+      <pre
+        className="p-4 text-sm font-mono text-gray-800 dark:text-gray-100 overflow-x-auto whitespace-pre"
+        dangerouslySetInnerHTML={{ __html: highlighted }}
+      />
     </div>
   );
 }

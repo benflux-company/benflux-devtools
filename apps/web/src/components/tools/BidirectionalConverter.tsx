@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle, Button, Card, CardContent, CardHea
 import { jsonToYaml, yamlToJson, type ConversionResult } from "../../lib/converters/yaml";
 import { jsonToToml, tomlToJson } from "../../lib/converters/toml";
 import { CodeOutput } from "./CodeOutput";
+import type { CodeLanguage } from "../../lib/code-highlighter";
 
 const CONVERTER_PAIRS = {
   yaml: { leftToRight: jsonToYaml, rightToLeft: yamlToJson },
@@ -18,8 +19,8 @@ export interface BidirectionalConverterProps {
   description: string;
   leftLabel: string;
   rightLabel: string;
-  leftLanguage: string;
-  rightLanguage: string;
+  leftLanguage: CodeLanguage;
+  rightLanguage: CodeLanguage;
   leftPlaceholder: string;
 }
 
