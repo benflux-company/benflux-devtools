@@ -12,9 +12,9 @@ test.describe("Login page", () => {
       "Benflux DevTools",
     );
 
-    const githubBtn = page.locator('[data-testid="github-login-btn"]');
-    await expect(githubBtn).toBeVisible();
-    await expect(githubBtn).toContainText("Continue with GitHub");
-    await expect(githubBtn).toHaveAttribute("href", "/api/auth/github");
+    const loginBtn = page.locator('[data-testid="auth-login-btn"]');
+    await expect(loginBtn).toBeVisible();
+    await expect(loginBtn).toContainText("Sign in with Benflux");
+    await expect(loginBtn).toHaveAttribute("href", /\/login$/);
   });
 });

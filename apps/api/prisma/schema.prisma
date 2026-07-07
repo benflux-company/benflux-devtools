@@ -64,7 +64,10 @@ enum WithdrawalStatus {
 
 model User {
   id            String   @id @default(cuid())
-  githubId      String   @unique
+  // Identity comes from benflux-auth (see GatewayAuthGuard); githubId is now
+  // just an optional profile link for PR/issue tracking, not the auth key.
+  benfluxUserId String   @unique
+  githubId      String?  @unique
   username      String   @unique
   email         String?  @unique
   avatarUrl     String?

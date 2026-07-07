@@ -1,0 +1,30 @@
+{{- range $name, $comp := .Values.components }}
+{{- if and $comp.gateway $comp.gateway.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $.Chart.Name }}-{{ $name }}-gateway
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ $comp.gateway.host | default "api.benfluxgroup.com" }}
+      http:
+        paths:
+          - path: {{ printf "%s(/|$)(.*)" ($comp.gateway.path | default (printf "/%s-%s" $.Chart.Name $name)) }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $.Chart.Name }}-{{ $name }}
+                port:
+                  number: {{ $comp.service.port }}
+  tls:
+    - hosts:
+        - {{ $comp.gateway.host | default "api.benfluxgroup.com" }}
+      secretName: {{ $.Chart.Name }}-{{ $name }}-gateway-tls
+{{- end }}
+{{- end }}

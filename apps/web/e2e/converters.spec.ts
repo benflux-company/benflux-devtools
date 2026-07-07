@@ -21,7 +21,8 @@ test.describe("Converters hub", () => {
   test("an available conversion links to its tool page", async ({ page }) => {
     await page.goto("/converters");
     await page.fill('[data-testid="converters-search"]', "xml");
-    await page.locator('[data-testid="converter-other-xml-json"]').click();
-    await expect(page).toHaveURL(/xml-to-json/);
+    const link = page.locator('[data-testid="converter-other-xml-json"]');
+    await expect(link).toBeVisible();
+    await Promise.all([page.waitForURL(/xml-to-json/), link.click()]);
   });
 });

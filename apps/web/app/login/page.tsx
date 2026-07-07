@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Github } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { Button, Card, CardContent, CardDescription, CardHeader } from "@benflux-ui/react";
 
 export const metadata: Metadata = {
   title: "Login – Benflux DevTools",
-  description: "Sign in to Benflux DevTools with GitHub",
+  description: "Sign in to Benflux DevTools with your Benflux account",
 };
+
+const AUTH_PUBLIC_URL = process.env.NEXT_PUBLIC_AUTH_PUBLIC_URL ?? "https://auth.benfluxgroup.com";
 
 export default function LoginPage() {
   return (
@@ -25,9 +27,9 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
           <Button asChild size="lg" className="w-full">
-            <a href="/api/auth/github" data-testid="github-login-btn">
-              <Github className="w-5 h-5" />
-              Continue with GitHub
+            <a href={`${AUTH_PUBLIC_URL}/login`} data-testid="auth-login-btn">
+              <LogIn className="w-5 h-5" />
+              Sign in with Benflux
             </a>
           </Button>
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center">

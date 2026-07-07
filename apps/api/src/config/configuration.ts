@@ -6,17 +6,20 @@ export default () => ({
     url: process.env.DATABASE_URL,
   },
 
-  jwt: {
-    secret: process.env.JWT_SECRET || 'fallback-secret-change-in-production',
-    expiresIn: '1h',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret',
-    refreshExpiresIn: '7d',
+  // Shared secret with benflux-auth: verifies the X-Benflux-* identity
+  // headers the gateway attaches after a successful session check.
+  gateway: {
+    hmacSecret: process.env.GATEWAY_HMAC_SECRET,
   },
 
+  auth: {
+    publicUrl: process.env.AUTH_PUBLIC_URL || 'https://auth.benfluxgroup.com',
+    apiUrl: process.env.AUTH_API_URL || 'https://auth.benfluxgroup.com',
+  },
+
+  // GitHub API automation (PR/issue tracking for weekly challenges) — not
+  // related to login, which is handled entirely by benflux-auth.
   github: {
-    clientId: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:4000/api/auth/github/callback',
     token: process.env.GITHUB_TOKEN,
     owner: process.env.GITHUB_OWNER || 'benflux-company',
     repo: process.env.GITHUB_REPO || 'benflux-devtools',
