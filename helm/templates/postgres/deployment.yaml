@@ -23,12 +23,8 @@ spec:
               value: benflux_devtools_db
             - name: POSTGRES_USER
               value: benflux_user
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Chart.Name }}-api-secrets
-                  key: DB_PASSWORD
-                  optional: true
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: trust
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
