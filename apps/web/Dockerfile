@@ -8,6 +8,15 @@ RUN npm install
 
 COPY . .
 
+# NEXT_PUBLIC_* vars are inlined at compile time by Next.js — they must be
+# passed as --build-arg by kaniko, not set at runtime via helm env.
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_AUTH_PUBLIC_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_AUTH_PUBLIC_URL=$NEXT_PUBLIC_AUTH_PUBLIC_URL
+
 RUN cd apps/web && npm run build
 
 FROM node:20-alpine
