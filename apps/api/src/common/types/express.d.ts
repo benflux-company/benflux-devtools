@@ -3,7 +3,13 @@ import { User as PrismaUser } from '@prisma/client';
 declare global {
   namespace Express {
     interface Request {
-      user?: PrismaUser & { orgId: string | null; roles: string[] };
+      user?: PrismaUser & {
+        orgId: string | null;
+        roles: string[];
+        permissions: string[];
+        fullName: string;
+        phone: string;
+      };
     }
   }
 }
