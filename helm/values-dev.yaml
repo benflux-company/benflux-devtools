@@ -68,6 +68,7 @@ components:
       NEXT_PUBLIC_API_URL: https://api-dev.benfluxgroup.com/benflux-devtools-api/api
       NEXT_PUBLIC_APP_URL: https://devtools-dev.benfluxgroup.com
       NEXT_PUBLIC_AUTH_PUBLIC_URL: https://auth-dev.benfluxgroup.com
+      AUTH_API_URL: https://auth-dev.benfluxgroup.com
 
 postgres:
   storage: 5Gi
