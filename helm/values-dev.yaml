@@ -72,13 +72,14 @@ components:
 postgres:
   storage: 5Gi
 
-# 2x replicaCount headroom for rolling-update surge (maxSurge=25% still needs
-# a full extra pod when replicaCount=1) — sized per component + postgres.
+# Sized for worst-case: all 3 deployments rolling simultaneously (2 pods each)
+# + migration job. api×2: 192Mi/768Mi — web×2: 192Mi/768Mi
+# postgres×2: 256Mi/1024Mi — migrate: 64Mi/192Mi
 resourceQuota:
-  requestsCpu: 400m
-  requestsMemory: 512Mi
-  limitsCpu: "2"
-  limitsMemory: 2Gi
+  requestsCpu: 600m
+  requestsMemory: 750Mi
+  limitsCpu: "3"
+  limitsMemory: 3Gi
 
 limitRange:
   defaultRequestCpu: 50m
