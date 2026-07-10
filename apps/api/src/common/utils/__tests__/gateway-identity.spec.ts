@@ -2,7 +2,15 @@ import { signGatewayIdentity, verifyGatewaySignature, isTimestampFresh } from '.
 
 describe('signGatewayIdentity / verifyGatewaySignature', () => {
   const secret = 'test-secret';
-  const identity = { userId: 'u1', orgId: 'o1', roles: 'admin,developer', timestamp: '1700000000000' };
+  const identity = {
+    userId: 'u1',
+    orgId: 'o1',
+    roles: 'admin,developer',
+    permissions: 'read,write',
+    fullName: 'Jean%20Dupont',
+    phone: '%2B243890000001',
+    timestamp: '1700000000000',
+  };
 
   it('verifies a signature produced by signGatewayIdentity with the same secret', () => {
     const signature = signGatewayIdentity(secret, identity);
@@ -18,6 +26,7 @@ describe('signGatewayIdentity / verifyGatewaySignature', () => {
     const signature = signGatewayIdentity(secret, identity);
     expect(verifyGatewaySignature(secret, { ...identity, userId: 'attacker' }, signature)).toBe(false);
     expect(verifyGatewaySignature(secret, { ...identity, roles: 'admin' }, signature)).toBe(false);
+    expect(verifyGatewaySignature(secret, { ...identity, permissions: 'admin' }, signature)).toBe(false);
   });
 
   it('rejects a garbage/empty signature without throwing', () => {

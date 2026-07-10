@@ -4,15 +4,16 @@ export interface GatewayIdentity {
   userId: string;
   orgId: string;
   roles: string;
+  permissions: string;
+  fullName: string;
+  phone: string;
   timestamp: string;
 }
 
-// Mirrors benflux-auth's shared/utils/gateway-signature.ts exactly: the
-// gateway (nginx auth_request -> benflux-auth /verify) signs these four
-// headers with the same secret, and every downstream service recomputes
-// this signature to trust the identity without re-checking the session.
+// Mirrors benflux-auth's shared/utils/gateway-signature.ts exactly.
+// Payload order must stay in sync with benflux-auth or every HMAC check fails.
 export function signGatewayIdentity(secret: string, identity: GatewayIdentity): string {
-  const payload = `${identity.userId}.${identity.orgId}.${identity.roles}.${identity.timestamp}`;
+  const payload = `${identity.userId}.${identity.orgId}.${identity.roles}.${identity.permissions}.${identity.fullName}.${identity.phone}.${identity.timestamp}`;
   return createHmac('sha256', secret).update(payload).digest('hex');
 }
 

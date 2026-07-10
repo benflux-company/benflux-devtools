@@ -62,6 +62,9 @@ export class GatewayAuthGuard implements CanActivate {
     const userId = response.headers.get('x-benflux-user-id');
     const orgId = response.headers.get('x-benflux-org-id') ?? '';
     const roles = response.headers.get('x-benflux-roles') ?? '';
+    const permissions = response.headers.get('x-benflux-permissions') ?? '';
+    const fullName = response.headers.get('x-benflux-full-name') ?? '';
+    const phone = response.headers.get('x-benflux-phone') ?? '';
     const timestamp = response.headers.get('x-benflux-timestamp');
     const signature = response.headers.get('x-benflux-signature');
 
@@ -71,7 +74,7 @@ export class GatewayAuthGuard implements CanActivate {
     if (!isTimestampFresh(timestamp)) {
       throw new UnauthorizedException('Gateway identity headers are stale');
     }
-    if (!verifyGatewaySignature(secret, { userId, orgId, roles, timestamp }, signature)) {
+    if (!verifyGatewaySignature(secret, { userId, orgId, roles, permissions, fullName, phone, timestamp }, signature)) {
       throw new UnauthorizedException('Invalid gateway signature');
     }
 
@@ -81,6 +84,9 @@ export class GatewayAuthGuard implements CanActivate {
       ...user,
       orgId: orgId || null,
       roles: roles ? roles.split(',').filter(Boolean) : [],
+      permissions: permissions ? permissions.split(',').filter(Boolean) : [],
+      fullName: fullName ? decodeURIComponent(fullName) : '',
+      phone: phone ? decodeURIComponent(phone) : '',
     };
 
     return true;
