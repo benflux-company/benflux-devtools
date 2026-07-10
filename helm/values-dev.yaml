@@ -16,6 +16,10 @@ components:
       enabled: true
       host: api-dev.benfluxgroup.com
       path: /benflux-devtools-api
+      extraAnnotations:
+        nginx.ingress.kubernetes.io/limit-rps: "30"
+        nginx.ingress.kubernetes.io/limit-connections: "20"
+        nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
     autoscaling:
       enabled: false
     resources:
