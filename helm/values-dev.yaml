@@ -43,7 +43,7 @@ components:
     replicaCount: 1
     image:
       repository: ghcr.io/benflux-company/benflux-devtools-web
-      tag: 63c5b99949fbdf35e66bad8a2e6ff16e2fbd71e3
+      tag: 4d1b4e7846a4e126b3047e83a6cdbff1885577b1
       pullPolicy: Always
     service:
       port: 80
